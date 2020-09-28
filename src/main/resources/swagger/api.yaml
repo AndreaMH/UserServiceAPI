@@ -1,0 +1,169 @@
+swagger: '2.0'
+info:
+  title: Person Service API
+  description: 'Operations person'
+  version: 1.0.0
+host: 'localhost:8080'
+basePath: /
+tags:
+  - name: person
+    description: management api.
+schemes:
+  - https
+
+paths:
+  /person:
+    post:
+      tags:
+        - person
+      summary: Insert person into database
+      operationId: createPerson
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          required: true
+          name: user
+          description: name and address
+          schema:
+            $ref: '#/definitions/Person'
+      responses:
+        '200':
+          description: person created
+          schema:
+            $ref: '#/definitions/PersonResponse'
+        '401':
+          description: Invalid credentials provided
+          schema:
+            $ref: '#/definitions/ApiError'
+        '405':
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/ApiError'
+        '406':
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/ApiError'
+        '500':
+          description: Server error
+          schema:
+            $ref: '#/definitions/ApiError'
+      x-auth-type: None
+      x-throttling-tier: Unlimited
+    get:
+      tags:
+        - 'person'
+      summary: Obtain users
+      description: ''
+      operationId: 'findAllPeople'
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/People'
+  /person/name:
+    get:
+      tags:
+        - 'person'
+      summary: Obtain a user by name
+      description: ''
+      operationId: 'findPersonByName'
+      produces:
+      - application/json
+      parameters:
+      - name: name
+        in: query
+        description: User's name
+        required: true
+        type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Person'
+    delete:
+      tags:
+      - 'person'
+      summary: Delete a user by name
+      description: ''
+      operationId: 'deletePersonByName'
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/PersonResponse'
+  /person/{name}:
+    put:
+      tags:
+      - 'person'
+      summary: Update user
+      description: ''
+      operationId: 'updatePerson'
+      produces:
+      - application/json
+      parameters:
+      - name: 'name'
+        in: 'path'
+        description: 'name that need to be updated'
+        required: true
+        type: 'string'
+      - in: 'body'
+        name: 'body'
+        description: 'Updated user object'
+        required: true
+        schema:
+          $ref: '#/definitions/Person'
+      responses:
+        '400':
+          description: 'Invalid user supplied'
+          schema:
+            $ref: '#/definitions/ApiError'
+        '404':
+          description: 'User not found'
+          schema:
+            $ref: '#/definitions/ApiError'
+    
+definitions:
+  People:
+    type: object
+    properties:
+      resultCode:
+        type: string
+      peopleList:
+        type: array
+        items:
+          $ref: '#/definitions/Person'
+  Person:
+    type: object
+    properties:
+      name:
+        type: string
+      address:
+        type: string
+  PersonResponse:
+    type: object
+    properties:
+      result:
+        type: string
+  ApiError:
+    type: object
+    properties:
+      type:
+        type: string
+      title:
+        type: string
+      status:
+        type: integer
+        format: int32
+      detail:
+        type: string
+      message:
+        type: string
+
+ 
