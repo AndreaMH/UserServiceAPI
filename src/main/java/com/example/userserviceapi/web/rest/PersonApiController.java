@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.userserviceapi.exceptions.InvalidAgeException;
 import com.example.userserviceapi.service.PersonService;
 import com.example.userserviceapi.web.api.PersonApi;
 import com.example.userserviceapi.web.api.model.People;
@@ -32,12 +33,20 @@ public class PersonApiController implements PersonApi {
 	public ResponseEntity<PersonResponse> createPerson(
 			@ApiParam(value = "name and address", required = true) @Valid @RequestBody Person user) {
 
-		return new ResponseEntity<PersonResponse>(personService.createPerson(user), HttpStatus.OK);
-	}
-
-	public ResponseEntity<PersonResponse> deletePersonByName() {
-
-		return new ResponseEntity<PersonResponse>(personService.deletePersonByName(), HttpStatus.OK);
+		PersonResponse personResponse = new PersonResponse();
+		
+		try {
+			personService.createPerson(user);
+			personResponse.setResult("Persona creada");
+			//return new ResponseEntity<PersonResponse>(personResponse.setResult("Persona creada"), HttpStatus.OK);
+			return new ResponseEntity<PersonResponse>(personResponse, HttpStatus.OK);
+		} catch (InvalidAgeException e) {
+			e.printStackTrace();
+			personResponse.setResult(e.getMessage());
+			//return new ResponseEntity<PersonResponse>(personResponse.setResult("Edad inválida"), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<PersonResponse>(personResponse, HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 
 	public ResponseEntity<People> findAllPeople() {
@@ -55,7 +64,12 @@ public class PersonApiController implements PersonApi {
 			@ApiParam(value = "name that need to be updated", required = true) @PathVariable("name") String name,
 			@ApiParam(value = "Updated user object", required = true) @Valid @RequestBody Person body) {
 
-		return new ResponseEntity<Void>(personService.updatePerson(body), HttpStatus.OK);
+		return new ResponseEntity<Void>(personService.updatePerson(body, name), HttpStatus.OK);
+	}
+
+	public ResponseEntity<PersonResponse> deletePersonByName(@NotNull @Valid String name) {
+		
+		return new ResponseEntity<PersonResponse>(personService.deletePersonByName(name), HttpStatus.OK);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.userserviceapi.entities.PersonTable;
+import com.example.userserviceapi.exceptions.InvalidAgeException;
 import com.example.userserviceapi.repository.PersonRepository;
 import com.example.userserviceapi.service.PersonService;
 import com.example.userserviceapi.web.api.model.People;
@@ -22,7 +23,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 
 	@Override
-	public PersonResponse createPerson(Person user) {
+	public PersonResponse createPerson(Person user) throws InvalidAgeException {
 		PersonResponse personResponse = new PersonResponse();
 		personResponse.setResult("Persona creada");
 
@@ -34,7 +35,15 @@ public class PersonServiceImpl implements PersonService {
 		String dir = user.getAddress();
 		personTable.setAddress(dir);
 
-		personRepository.save(personTable);
+		int edad = user.getAge();
+
+		if (edad < 18) {
+			throw new InvalidAgeException(400);
+
+		} else {
+			personTable.setAge(edad);
+			personRepository.save(personTable);
+		}
 
 		return personResponse;
 	}
@@ -51,14 +60,15 @@ public class PersonServiceImpl implements PersonService {
 				Person person = new Person();
 				person.setName(personTable.getName());
 				person.setAddress(personTable.getAddress());
+				person.setAge(personTable.getAge());
 
 				peopleList.add(person);
 			}
 
-			people.setResultCode("0");
+			people.setResultCode("0"); // OK
 
 		} catch (Exception e) {
-			people.setResultCode("1");
+			people.setResultCode("1"); // KO
 		}
 
 		people.setPeopleList(peopleList);
@@ -75,23 +85,52 @@ public class PersonServiceImpl implements PersonService {
 		for (PersonTable personTable : listaPersona) {
 			personApi.setName(personTable.getName());
 			personApi.setAddress(personTable.getAddress());
+			personApi.setAge(personTable.getAge());
 		}
 
 		return personApi;
 	}
 
 	@Override
-	public Void updatePerson(Person body) {
-		Person person = new Person();
-		person.setAddress("Alemania");
+	public Void updatePerson(Person body, String name) {
+		PersonTable personTable = new PersonTable();
+
+		// buscar persona en base de datos
+		List<PersonTable> listaPersona = personRepository.findByName(name);
+
+		long id = 0;
+
+		for (PersonTable personlist : listaPersona) {
+			personTable.setName(personlist.getName());
+			personTable.setAddress(personlist.getAddress());
+			personTable.setAge(personlist.getAge());
+			id = personlist.getId();
+		}
+
+		personTable = personRepository.findById(id).get();
+
+		// setear la nueva direccion y edad
+		personTable.setAddress(body.getAddress());
+		personTable.setAge(body.getAge());
+
+		// actualizar en base de datos la nueva persona
+		personRepository.save(personTable);
 
 		return null;
 	}
 
 	@Override
-	public PersonResponse deletePersonByName() {
+	public PersonResponse deletePersonByName(String name) {
 		PersonResponse personResponse = new PersonResponse();
 		personResponse.setResult("Persona borrada");
+
+		List<PersonTable> listaPersona = personRepository.findByName(name);
+
+		for (PersonTable personTable : listaPersona) {
+			if (personTable.getName().equals(name)) {
+				personRepository.delete(personTable);
+			}
+		}
 
 		return personResponse;
 	}

@@ -35,6 +35,7 @@ public interface PersonApi {
 	@ApiOperation(value = "Insert person into database", nickname = "createPerson", notes = "", response = PersonResponse.class, tags = {
 			"person", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "person created", response = PersonResponse.class),
+			@ApiResponse(code = 400, message = "Invalid age", response = ApiError.class),
 			@ApiResponse(code = 401, message = "Invalid credentials provided", response = ApiError.class),
 			@ApiResponse(code = 405, message = "Invalid input", response = ApiError.class),
 			@ApiResponse(code = 406, message = "Method not allowed", response = ApiError.class),
@@ -42,13 +43,14 @@ public interface PersonApi {
 	@RequestMapping(value = "/person", produces = { "application/json" }, consumes = {
 			"application/json" }, method = RequestMethod.POST)
 	ResponseEntity<PersonResponse> createPerson(
-			@ApiParam(value = "name and address", required = true) @Valid @RequestBody Person user);
+			@ApiParam(value = "name, address and age", required = true) @Valid @RequestBody Person user) throws Exception;
 
 	@ApiOperation(value = "Delete a user by name", nickname = "deletePersonByName", notes = "", response = PersonResponse.class, tags = {
 			"person", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = PersonResponse.class) })
 	@RequestMapping(value = "/person/name", produces = { "application/json" }, method = RequestMethod.DELETE)
-	ResponseEntity<PersonResponse> deletePersonByName();
+	ResponseEntity<PersonResponse> deletePersonByName(
+			@NotNull @ApiParam(value = "User's name", required = true) @Valid @RequestParam(value = "name", required = true) String name);
 
 	@ApiOperation(value = "Obtain users", nickname = "findAllPeople", notes = "", response = People.class, tags = {
 			"person", })

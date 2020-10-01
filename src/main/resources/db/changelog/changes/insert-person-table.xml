@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <changeSet author="admin" id="2">
-        <insert tableName="person">
-            <column name="id" valueNumeric="1"/>
-            <column name="name" value="Sergio"/>
-            <column name="address" value="Madrid"/>
-        </insert>
-    </changeSet>
+	<changeSet author="admin" id="2">
+		<insert tableName="person">
+			<column name="id" valueNumeric="1" />
+			<column name="name" value="Sergio" />
+			<column name="address" value="Madrid" />
+			<column name="age" valueNumeric="31" />
+		</insert>
+		<insert tableName="person">
+			<column name="id" valueNumeric="2"/>
+            <column name="name" value="Andrea"/>
+            <column name="address" value="Algete"/>
+            <column name="age" valueNumeric="20"/>
+		</insert>
+		<insert tableName="person">
+			<column name="id" valueNumeric="3"/>
+            <column name="name" value="Michel"/>
+            <column name="address" value="Alcobendas"/>
+            <column name="age" valueNumeric="21"/>
+		</insert>
+	</changeSet>
 </databaseChangeLog>

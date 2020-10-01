@@ -26,7 +26,7 @@ paths:
         - in: body
           required: true
           name: user
-          description: name and address
+          description: name, address and age
           schema:
             $ref: '#/definitions/Person'
       responses:
@@ -34,6 +34,10 @@ paths:
           description: person created
           schema:
             $ref: '#/definitions/PersonResponse'
+        '400':
+          description: Invalid age
+          schema:
+            $ref: '#/definitions/ApiError'
         '401':
           description: Invalid credentials provided
           schema:
@@ -93,6 +97,12 @@ paths:
       operationId: 'deletePersonByName'
       produces:
       - application/json
+      parameters:
+      - name: name
+        in: query
+        description: User's name
+        required: true
+        type: string
       responses:
         200:
           description: OK
@@ -146,6 +156,9 @@ definitions:
         type: string
       address:
         type: string
+      age:
+        type: integer
+        format: int32
   PersonResponse:
     type: object
     properties:

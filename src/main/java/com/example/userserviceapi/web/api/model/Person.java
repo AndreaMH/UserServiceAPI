@@ -21,6 +21,9 @@ public class Person {
 	@JsonProperty("address")
 	private String address = null;
 
+	@JsonProperty("age")
+	private Integer age = null;
+
 	public Person name(String name) {
 		this.name = name;
 		return this;
@@ -61,6 +64,26 @@ public class Person {
 		this.address = address;
 	}
 
+	public Person age(Integer age) {
+		this.age = age;
+		return this;
+	}
+
+	/**
+	 * Get age
+	 * 
+	 * @return age
+	 **/
+	@ApiModelProperty(value = "")
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
 	@Override
 	public boolean equals(java.lang.Object o) {
 		if (this == o) {
@@ -70,12 +93,13 @@ public class Person {
 			return false;
 		}
 		Person person = (Person) o;
-		return Objects.equals(this.name, person.name) && Objects.equals(this.address, person.address);
+		return Objects.equals(this.name, person.name) && Objects.equals(this.address, person.address)
+				&& Objects.equals(this.age, person.age);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, address);
+		return Objects.hash(name, address, age);
 	}
 
 	@Override
@@ -85,6 +109,7 @@ public class Person {
 
 		sb.append("    name: ").append(toIndentedString(name)).append("\n");
 		sb.append("    address: ").append(toIndentedString(address)).append("\n");
+		sb.append("    age: ").append(toIndentedString(age)).append("\n");
 		sb.append("}");
 		return sb.toString();
 	}

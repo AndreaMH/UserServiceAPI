@@ -22,4 +22,6 @@ public class PersonTable {
 	
 	private String address;
 	
+	private int age;
+	
 }
