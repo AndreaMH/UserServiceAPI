@@ -2,9 +2,6 @@ package com.example.userserviceapi.exceptions;
 
 public class InvalidAgeException extends Exception {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private int code;

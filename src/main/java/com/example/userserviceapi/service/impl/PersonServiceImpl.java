@@ -56,14 +56,18 @@ public class PersonServiceImpl implements PersonService {
 		try {
 			List<PersonTable> listaPersonas = (List<PersonTable>) personRepository.findAll();
 
-			for (PersonTable personTable : listaPersonas) {
-				Person person = new Person();
-				person.setName(personTable.getName());
-				person.setAddress(personTable.getAddress());
-				person.setAge(personTable.getAge());
+			/*
+			 * for (PersonTable personTable : listaPersonas) { Person person = new Person();
+			 * person.setName(personTable.getName());
+			 * person.setAddress(personTable.getAddress());
+			 * person.setAge(personTable.getAge());
+			 * 
+			 * peopleList.add(person); }
+			 */
 
-				peopleList.add(person);
-			}
+			listaPersonas.stream().forEach(personTable -> {
+				recorrerListaPersonas(peopleList, personTable);
+			});
 
 			people.setResultCode("0"); // OK
 
@@ -76,19 +80,36 @@ public class PersonServiceImpl implements PersonService {
 		return people;
 	}
 
+	private void recorrerListaPersonas(List<Person> peopleList, PersonTable personTable) {
+		Person person = new Person();
+		recorrerListaPersonaPorNombre(person, personTable);
+		peopleList.add(person);
+	}
+
 	@Override
 	public Person findPersonByName(String name) {
 		Person personApi = new Person();
 
 		List<PersonTable> listaPersona = personRepository.findByName(name);
 
-		for (PersonTable personTable : listaPersona) {
-			personApi.setName(personTable.getName());
-			personApi.setAddress(personTable.getAddress());
-			personApi.setAge(personTable.getAge());
-		}
+		/*
+		 * for (PersonTable personTable : listaPersona) {
+		 * personApi.setName(personTable.getName());
+		 * personApi.setAddress(personTable.getAddress());
+		 * personApi.setAge(personTable.getAge()); }
+		 */
+
+		listaPersona.stream().forEach(personTable -> {
+			recorrerListaPersonaPorNombre(personApi, personTable);
+		});
 
 		return personApi;
+	}
+
+	private void recorrerListaPersonaPorNombre(Person personApi, PersonTable personTable) {
+		personApi.setName(personTable.getName());
+		personApi.setAddress(personTable.getAddress());
+		personApi.setAge(personTable.getAge());
 	}
 
 	@Override
@@ -106,6 +127,13 @@ public class PersonServiceImpl implements PersonService {
 			personTable.setAge(personlist.getAge());
 			id = personlist.getId();
 		}
+
+		/*
+		 * listaPersona.stream().forEach((personList) -> {
+		 * personTable.setName(personList.getName());
+		 * personTable.setAddress(personList.getAddress());
+		 * personTable.setAge(personList.getAge()); id = personList.getId(); });
+		 */
 
 		personTable = personRepository.findById(id).get();
 
@@ -126,11 +154,15 @@ public class PersonServiceImpl implements PersonService {
 
 		List<PersonTable> listaPersona = personRepository.findByName(name);
 
-		for (PersonTable personTable : listaPersona) {
-			if (personTable.getName().equals(name)) {
-				personRepository.delete(personTable);
-			}
-		}
+		/*
+		 * for (PersonTable personTable : listaPersona) { if
+		 * (personTable.getName().equals(name)) { personRepository.delete(personTable);
+		 * } }
+		 */
+
+		listaPersona.stream().filter(n -> n.getName().equals(name)).forEach(n -> {
+			personRepository.delete(n);
+		});
 
 		return personResponse;
 	}
