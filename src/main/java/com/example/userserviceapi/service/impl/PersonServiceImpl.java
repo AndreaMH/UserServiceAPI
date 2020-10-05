@@ -2,11 +2,13 @@ package com.example.userserviceapi.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.example.userserviceapi.entities.PersonTable;
+import com.example.userserviceapi.entities.PersonEntity;
 import com.example.userserviceapi.exceptions.InvalidAgeException;
+import com.example.userserviceapi.mapper.PersonMapper;
 import com.example.userserviceapi.repository.PersonRepository;
 import com.example.userserviceapi.service.PersonService;
 import com.example.userserviceapi.web.api.model.People;
@@ -18,8 +20,11 @@ public class PersonServiceImpl implements PersonService {
 
 	private PersonRepository personRepository;
 
-	public PersonServiceImpl(PersonRepository personRepository) {
+	private PersonMapper personMapper;
+
+	public PersonServiceImpl(PersonRepository personRepository, PersonMapper personMapper) {
 		this.personRepository = personRepository;
+		this.personMapper = personMapper;
 	}
 
 	@Override
@@ -27,13 +32,13 @@ public class PersonServiceImpl implements PersonService {
 		PersonResponse personResponse = new PersonResponse();
 		personResponse.setResult("Persona creada");
 
-		PersonTable personTable = new PersonTable();
+		PersonEntity personEntity = new PersonEntity();
 
 		String nombre = user.getName();
-		personTable.setName(nombre);
+		personEntity.setName(nombre);
 
 		String dir = user.getAddress();
-		personTable.setAddress(dir);
+		personEntity.setAddress(dir);
 
 		int edad = user.getAge();
 
@@ -41,8 +46,8 @@ public class PersonServiceImpl implements PersonService {
 			throw new InvalidAgeException(400);
 
 		} else {
-			personTable.setAge(edad);
-			personRepository.save(personTable);
+			personEntity.setAge(edad);
+			personRepository.save(personEntity);
 		}
 
 		return personResponse;
@@ -54,20 +59,11 @@ public class PersonServiceImpl implements PersonService {
 		List<Person> peopleList = new ArrayList<Person>();
 
 		try {
-			List<PersonTable> listaPersonas = (List<PersonTable>) personRepository.findAll();
+			List<PersonEntity> listaPersonas = (List<PersonEntity>) personRepository.findAll();
 
-			/*
-			 * for (PersonTable personTable : listaPersonas) { Person person = new Person();
-			 * person.setName(personTable.getName());
-			 * person.setAddress(personTable.getAddress());
-			 * person.setAge(personTable.getAge());
-			 * 
-			 * peopleList.add(person); }
-			 */
-
-			listaPersonas.stream().forEach(personTable -> {
-				recorrerListaPersonas(peopleList, personTable);
-			});
+			peopleList = listaPersonas.stream()
+					.map(personEntity -> personMapper.mapperFromPersonEntityToPerson(personEntity))
+					.collect(Collectors.toList());
 
 			people.setResultCode("0"); // OK
 
@@ -80,69 +76,33 @@ public class PersonServiceImpl implements PersonService {
 		return people;
 	}
 
-	private void recorrerListaPersonas(List<Person> peopleList, PersonTable personTable) {
-		Person person = new Person();
-		recorrerListaPersonaPorNombre(person, personTable);
-		peopleList.add(person);
-	}
-
 	@Override
 	public Person findPersonByName(String name) {
-		Person personApi = new Person();
+		Person person;
+		List<Person> personList;
 
-		List<PersonTable> listaPersona = personRepository.findByName(name);
+		List<PersonEntity> personRepoList = personRepository.findByName(name);
 
-		/*
-		 * for (PersonTable personTable : listaPersona) {
-		 * personApi.setName(personTable.getName());
-		 * personApi.setAddress(personTable.getAddress());
-		 * personApi.setAge(personTable.getAge()); }
-		 */
+		personList = personRepoList.stream()
+				.map(personEntity -> personMapper.mapperFromPersonEntityToPerson(personEntity))
+				.collect(Collectors.toList());
 
-		listaPersona.stream().forEach(personTable -> {
-			recorrerListaPersonaPorNombre(personApi, personTable);
-		});
+		person = personList.get(0);
 
-		return personApi;
-	}
-
-	private void recorrerListaPersonaPorNombre(Person personApi, PersonTable personTable) {
-		personApi.setName(personTable.getName());
-		personApi.setAddress(personTable.getAddress());
-		personApi.setAge(personTable.getAge());
+		return person;
 	}
 
 	@Override
 	public Void updatePerson(Person body, String name) {
-		PersonTable personTable = new PersonTable();
+		List<PersonEntity> personRepoList = personRepository.findByName(name);
 
-		// buscar persona en base de datos
-		List<PersonTable> listaPersona = personRepository.findByName(name);
+		long id = personRepoList.get(0).getId();
 
-		long id = 0;
+		List<PersonEntity> newList = personRepoList.stream()
+				.map(personEnt -> personMapper.mapperFromPersonToPersonEntity(body)).collect(Collectors.toList());
 
-		for (PersonTable personlist : listaPersona) {
-			personTable.setName(personlist.getName());
-			personTable.setAddress(personlist.getAddress());
-			personTable.setAge(personlist.getAge());
-			id = personlist.getId();
-		}
-
-		/*
-		 * listaPersona.stream().forEach((personList) -> {
-		 * personTable.setName(personList.getName());
-		 * personTable.setAddress(personList.getAddress());
-		 * personTable.setAge(personList.getAge()); id = personList.getId(); });
-		 */
-
-		personTable = personRepository.findById(id).get();
-
-		// setear la nueva direccion y edad
-		personTable.setAddress(body.getAddress());
-		personTable.setAge(body.getAge());
-
-		// actualizar en base de datos la nueva persona
-		personRepository.save(personTable);
+		newList.get(0).setId(id);
+		personRepository.save(newList.get(0));
 
 		return null;
 	}
@@ -152,17 +112,9 @@ public class PersonServiceImpl implements PersonService {
 		PersonResponse personResponse = new PersonResponse();
 		personResponse.setResult("Persona borrada");
 
-		List<PersonTable> listaPersona = personRepository.findByName(name);
+		List<PersonEntity> listaPersona = personRepository.findByName(name);
 
-		/*
-		 * for (PersonTable personTable : listaPersona) { if
-		 * (personTable.getName().equals(name)) { personRepository.delete(personTable);
-		 * } }
-		 */
-
-		listaPersona.stream().filter(n -> n.getName().equals(name)).forEach(n -> {
-			personRepository.delete(n);
-		});
+		listaPersona.stream().filter(n -> n.getName().equals(name)).forEach(n -> personRepository.delete(n));
 
 		return personResponse;
 	}

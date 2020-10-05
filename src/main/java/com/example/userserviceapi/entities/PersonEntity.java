@@ -13,15 +13,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table("PERSON")
-public class PersonTable {
+public class PersonEntity {
 	// Clase Entidad, representa lo que hay en la base de datos
 	@Id
 	private long id;
-	
+
 	private String name;
-	
+
 	private String address;
-	
+
 	private int age;
-	
+
 }

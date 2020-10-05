@@ -7,11 +7,11 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.userserviceapi.entities.PersonTable;
+import com.example.userserviceapi.entities.PersonEntity;
 
 @Repository
-public interface PersonRepository extends CrudRepository<PersonTable, Long> {
+public interface PersonRepository extends CrudRepository<PersonEntity, Long> {
 
 	@Query("select * from person where name=:name")
-	List<PersonTable> findByName(@Param("name") String name);
+	List<PersonEntity> findByName(@Param("name") String name);
 }
