@@ -26,6 +26,10 @@ public class PersonServiceImpl implements PersonService {
 		this.personRepository = personRepository;
 		this.personMapper = personMapper;
 	}
+	
+	public String greet() {
+		return "Hello World" ;
+	}
 
 	@Override
 	public PersonResponse createPerson(Person user) throws InvalidAgeException {

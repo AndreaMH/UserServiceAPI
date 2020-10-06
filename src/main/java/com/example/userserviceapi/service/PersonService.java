@@ -16,5 +16,7 @@ public interface PersonService {
 	Void updatePerson(Person body, String name);
 
 	PersonResponse deletePersonByName(String name);
+	
+	String greet();
 
 }
