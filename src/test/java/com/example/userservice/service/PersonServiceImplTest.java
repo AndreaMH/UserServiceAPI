@@ -23,12 +23,12 @@ public class PersonServiceImplTest {
 
 	}
 
-	 @Test
+	@Test
 	public void when_greet_is_ok() {
 		assertEquals("Hell, World", myService.greet());
 	}
 
-	@Test
+	//@Test
 	public void test_JUnit() {
 		System.out.println("This is the testcase in this class");
 		String str1 = "This is the testcase in this class";

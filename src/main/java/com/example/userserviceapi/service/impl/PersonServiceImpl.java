@@ -28,7 +28,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	public String greet() {
-		return "Hello World" ;
+		return "Hello World";
 	}
 
 	@Override
