@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.example.userserviceapi.client.GreetingClient;
 import com.example.userserviceapi.entities.PersonEntity;
 import com.example.userserviceapi.exceptions.InvalidAgeException;
 import com.example.userserviceapi.mapper.PersonMapper;
 import com.example.userserviceapi.repository.PersonRepository;
 import com.example.userserviceapi.service.PersonService;
+import com.example.userserviceapi.web.api.model.GreetingResponse;
 import com.example.userserviceapi.web.api.model.People;
 import com.example.userserviceapi.web.api.model.Person;
+import com.example.userserviceapi.web.api.model.PersonGreet;
 import com.example.userserviceapi.web.api.model.PersonResponse;
 
 @Service
@@ -22,11 +26,14 @@ public class PersonServiceImpl implements PersonService {
 
 	private PersonMapper personMapper;
 
-	public PersonServiceImpl(PersonRepository personRepository, PersonMapper personMapper) {
+	private GreetingClient client;
+
+	public PersonServiceImpl(PersonRepository personRepository, PersonMapper personMapper, GreetingClient client) {
 		this.personRepository = personRepository;
 		this.personMapper = personMapper;
+		this.client = client;
 	}
-	
+
 	public String greet() {
 		return "Hello World";
 	}
@@ -34,7 +41,6 @@ public class PersonServiceImpl implements PersonService {
 	@Override
 	public PersonResponse createPerson(Person user) throws InvalidAgeException {
 		PersonResponse personResponse = new PersonResponse();
-		personResponse.setResult("Persona creada");
 
 		PersonEntity personEntity = new PersonEntity();
 
@@ -52,6 +58,12 @@ public class PersonServiceImpl implements PersonService {
 		} else {
 			personEntity.setAge(edad);
 			personRepository.save(personEntity);
+
+			PersonGreet personGreet = new PersonGreet();
+			personGreet.setName(nombre);
+			ResponseEntity<GreetingResponse> response = client.hello(personGreet);
+
+			personResponse.setResult("Persona creada\n" + response.getBody().getResult());
 		}
 
 		return personResponse;

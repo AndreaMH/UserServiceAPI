@@ -36,8 +36,7 @@ public class PersonApiController implements PersonApi {
 		PersonResponse personResponse = new PersonResponse();
 		
 		try {
-			personService.createPerson(user);
-			personResponse.setResult("Persona creada");
+			personResponse = personService.createPerson(user);
 			return new ResponseEntity<PersonResponse>(personResponse, HttpStatus.OK);
 		} catch (InvalidAgeException e) {
 			e.printStackTrace();
