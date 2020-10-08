@@ -31,19 +31,17 @@ public class PersonApiController implements PersonApi {
 	}
 
 	public ResponseEntity<PersonResponse> createPerson(
-			@ApiParam(value = "name and address", required = true) @Valid @RequestBody Person user) {
+			@ApiParam(value = "name, address and age", required = true) @Valid @RequestBody Person user) {
 
 		PersonResponse personResponse = new PersonResponse();
 		
 		try {
 			personService.createPerson(user);
 			personResponse.setResult("Persona creada");
-			//return new ResponseEntity<PersonResponse>(personResponse.setResult("Persona creada"), HttpStatus.OK);
 			return new ResponseEntity<PersonResponse>(personResponse, HttpStatus.OK);
 		} catch (InvalidAgeException e) {
 			e.printStackTrace();
 			personResponse.setResult(e.getMessage());
-			//return new ResponseEntity<PersonResponse>(personResponse.setResult("Edad inválida"), HttpStatus.BAD_REQUEST);
 			return new ResponseEntity<PersonResponse>(personResponse, HttpStatus.BAD_REQUEST);
 		}
 		

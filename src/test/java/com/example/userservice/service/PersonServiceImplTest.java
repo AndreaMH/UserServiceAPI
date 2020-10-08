@@ -3,7 +3,7 @@ package com.example.userservice.service;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -13,7 +13,7 @@ import com.example.userserviceapi.service.PersonService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PersonServiceImplTest {
-
+	
 	@Mock
 	PersonService myService;
 
